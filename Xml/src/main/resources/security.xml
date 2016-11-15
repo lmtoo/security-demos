@@ -20,7 +20,7 @@
         <intercept-url pattern="/admin/**" access="hasRole('ADMIN')"/>
         <intercept-url pattern="/**" access="hasRole('USER')"/>
         <custom-filter ref="loggingFilter" before="ANONYMOUS_FILTER"/>
-        <remember-me key="security-rmkey-paLLwApsifs24THosE62scabWow78PEaCh99Jus" data-source-ref="dataSource"/>
+        <remember-me key="security-rmkey-paLLwApsifs24THosE62scabWow78PEaCh99Jus" />
         <form-login login-page="/login"/>
         <logout delete-cookies="JSESSIONID" logout-url="/logout" logout-success-url="/login"/>
         <session-management session-fixation-protection="newSession" >
