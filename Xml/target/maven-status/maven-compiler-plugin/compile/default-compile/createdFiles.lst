@@ -1,8 +1,0 @@
-com\lubansoft\service\MessageService.class
-com\lubansoft\security\MongoUserDetailsManager.class
-com\lubansoft\security\MongoUserDetailsService.class
-com\lubansoft\web\controllers\UserController.class
-com\lubansoft\web\controllers\AdminController.class
-com\lubansoft\web\filters\WebRequestLoggingFilter.class
-com\lubansoft\service\HelloMessageService.class
-com\lubansoft\web\controllers\LoginLogoutController.class
