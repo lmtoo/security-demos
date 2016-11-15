@@ -7,13 +7,19 @@
 
     <!-- 配置Spring监听器 -->
     <listener>
-        <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class><!--并发session控制-->
+        <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher
+        </listener-class><!--并发session控制-->
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:/security.xml</param-value>
+        <param-value>classpath:/applicationContext.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>spring.profiles.default</param-name>
+        <param-value>hsql</param-value>
     </context-param>
 
     <!--字符编码统一设置-->
@@ -40,4 +46,13 @@
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <servlet>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
 </web-app>

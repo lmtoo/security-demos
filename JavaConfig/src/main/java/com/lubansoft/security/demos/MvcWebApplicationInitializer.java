@@ -1,5 +1,6 @@
 package com.lubansoft.security.demos;
 
+import com.lubansoft.security.demos.security.WebSecurityConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 /**

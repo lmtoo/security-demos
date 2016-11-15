@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.springframework.org/schema/security"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+             http://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <http pattern="/css/**" security="none"/>
+    <http pattern="/js/**" security="none"/>
+
+    <http pattern="/restful/**" create-session="stateless" use-expressions="false">
+        <intercept-url pattern='/**' access="ROLE_REMOTE"/>
+        <http-basic/>
+    </http>
+
+    <http use-expressions="true">
+        <cors configuration-source-ref="corsSource"/>
+        <intercept-url pattern="/login**" access="permitAll"/><!--允许任何人访问登陆地址-->
+        <intercept-url pattern="/admin/**" access="hasRole('ADMIN')"/>
+        <intercept-url pattern="/**" access="hasRole('USER')"/>
+        <custom-filter ref="loggingFilter" before="ANONYMOUS_FILTER"/>
+        <remember-me key="security-rmkey-paLLwApsifs24THosE62scabWow78PEaCh99Jus" data-source-ref="dataSource"/>
+        <form-login login-page="/login"/>
+        <logout delete-cookies="JSESSIONID" logout-url="/logout" logout-success-url="/login"/>
+        <session-management session-fixation-protection="newSession" >
+            <concurrency-control session-registry-alias="sessionRegistry" error-if-maximum-exceeded="false"/>
+        </session-management>
+        <headers defaults-disabled="true">
+            <frame-options policy="SAMEORIGIN"/>
+            <hsts disabled="false" include-subdomains="true" max-age-seconds="31536000"/>
+        </headers>
+    </http>
+
+    <authentication-manager alias="authenticationManager"><!--注册ProviderManager-->
+        <authentication-provider user-service-ref="userDetailsManager">
+            <password-encoder ref="passwordEncoder"/>
+        </authentication-provider>
+    </authentication-manager>
+
+    <!--userDetails管理器-->
+    <beans:bean name="userDetailsManager"  class="org.springframework.security.provisioning.JdbcUserDetailsManager" lazy-init="true">
+        <beans:property name="dataSource" ref="dataSource"/>
+        <beans:property name="authenticationManager" ref="authenticationManager"/>
+    </beans:bean>
+
+    <global-method-security jsr250-annotations="enabled" secured-annotations="enabled" pre-post-annotations="enabled"><!--开启注解的支持-->
+        <!--基于自定义切面的支持-->
+        <!--<protect-pointcut expression="execution(* com.lubansoft.service.*Service.*(..))" access="ROLE_USER"/>-->
+    </global-method-security>
+
+    <beans:bean id="corsConfiguration" class="org.springframework.web.cors.CorsConfiguration">
+        <beans:property name="allowedOrigins">
+            <beans:list>
+                <beans:value>https://example.com/</beans:value>
+            </beans:list>
+        </beans:property>
+        <beans:property name="allowedMethods">
+            <beans:list>
+                <beans:value>GET</beans:value>
+                <beans:value>POST</beans:value>
+            </beans:list>
+        </beans:property>
+        <beans:property name="allowCredentials" value="true"/>
+    </beans:bean>
+    <beans:bean id="corsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
+        <beans:property name="corsConfigurations">
+            <beans:map value-type="org.springframework.web.cors.CorsConfiguration">
+                <beans:entry key="/**" value-ref="corsConfiguration"/>
+            </beans:map>
+        </beans:property>
+    </beans:bean>
+
+    <beans:bean id="tokenRepository" class="org.springframework.security.web.csrf.CookieCsrfTokenRepository"/>
+    <beans:bean id="loggingFilter" class="com.lubansoft.web.filters.WebRequestLoggingFilter"/>
+
+    <!--安全消息国际化-->
+    <beans:bean id="messageSource"
+                class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <beans:property name="basename" value="classpath:org/springframework/security/messages"/>
+    </beans:bean>
+
+    <!--定义密码加解密-->
+    <beans:bean name="noOpPasswordEncoder" class="org.springframework.security.crypto.password.NoOpPasswordEncoder"/>
+    <beans:bean name="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+    <beans:alias name="noOpPasswordEncoder" alias="passwordEncoder"/>
+</beans:beans>
